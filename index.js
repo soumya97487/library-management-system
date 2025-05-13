@@ -3,7 +3,6 @@ const app = express();
 
 const PORT = process.env.PORT || 3000;
 
-// Middleware to log info
 app.use((req, res, next) => {
   const fullUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
   console.log(`\n API Request Received`);
@@ -14,12 +13,12 @@ app.use((req, res, next) => {
   next();
 });
 
-// API route
+
 app.get('/api/info', (req, res) => {
   res.send('API called. Check the console for details.');
 });
 
-// Start server
+
 app.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}/api/info`);
 });
