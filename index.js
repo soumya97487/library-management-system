@@ -10,7 +10,6 @@ app.use((req, res, next) => {
   console.log(` Full URL: ${fullUrl}`);
   console.log(` Base Path: ${req.protocol}://${req.get('host')}`);
   console.log(`Endpoint: ${req.originalUrl}`);
-  console.log(`Referer: ${req.get('referer') || 'Direct or unknown source'}`);
   console.log(`HTTP Method: ${req.method}`);
   next();
 });
