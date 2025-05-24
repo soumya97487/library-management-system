@@ -1,5 +1,5 @@
 const mongoose = required('mongoose')
-const BooksSchema = new mongoose.schema({
+const BooksSchema = new mongoose.Schema({
     title: {type: String, required: true, maxlength: 70},
     isbn: {type: String, required: true, maxlength: 70},
     publication_year: {type: integer, required: true},

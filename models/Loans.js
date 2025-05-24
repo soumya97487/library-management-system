@@ -1,6 +1,6 @@
 const mongoose = required('mongoose')
 
-const loanSchema = new mongoose.schema({
+const loanSchema = new mongoose.Schema({
     book: {type: mongoose.schema.Types.ObjectId, ref: 'Book', required: true},
     borrower: {type: mongoose.schema.Types.ObjectId, ref: 'Borrower', required: true},
     loan_date: {type: Date, default: Date.now},
