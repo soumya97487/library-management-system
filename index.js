@@ -9,8 +9,8 @@ connectDB();
 
 // Route registration
 app.use('/api/authors', require('./routes/authors'));
-// app.use('/api/books', require('./routes/books'));
-// app.use('/api/categories', require('./routes/categories'));
+app.use('/api/books', require('./routes/books'));
+app.use('/api/categories', require('./routes/categories'));
 // app.use('/api/borrowers', require('./routes/borrowers'));
 // app.use('/api/loans', require('./routes/loans'));
 

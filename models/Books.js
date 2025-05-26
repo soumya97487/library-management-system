@@ -1,11 +1,11 @@
-const mongoose = required('mongoose')
+const mongoose = require('mongoose')
 const BooksSchema = new mongoose.Schema({
     title: {type: String, required: true, maxlength: 70},
     isbn: {type: String, required: true, maxlength: 70},
-    publication_year: {type: integer, required: true},
+    publication_year: {type: Number, required: true},
     publisher: {type: String, required: true, maxlength: 70},
      created_at: {type: Date, default: Date.now},
-     authors: [{type: mongoose.schema.Types.objectId, ref: 'Author'}],
-     categories:[{type: mongoose.schema.Types.objectID, ref: 'Category'}]
+     authors: [{type: mongoose.Schema.Types.ObjectId, ref: 'Author'}],
+     categories:[{type: mongoose.Schema.Types.ObjectId, ref: 'Category'}]
 })
-module.exports = mongoose.model("Books", BooksSchema)
+module.exports = mongoose.model("books", BooksSchema)   
