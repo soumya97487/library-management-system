@@ -1,11 +1,11 @@
-const mongoose = required('mongoose')
+const mongoose = require('mongoose')
 
 const loanSchema = new mongoose.Schema({
-    book: {type: mongoose.schema.Types.ObjectId, ref: 'Book', required: true},
-    borrower: {type: mongoose.schema.Types.ObjectId, ref: 'Borrower', required: true},
+    book: {type: mongoose.Schema.Types.ObjectId, ref: 'books', required: true},
+    borrower: {type: mongoose.Schema.Types.ObjectId, ref: 'borrowers', required: true},
     loan_date: {type: Date, default: Date.now},
     due_date: {type: Date, required: true},
-    return_date: {type: date, required: true},
+    return_date: {type: Date, required: true},
     status: {type: String, default: 'on_loan'}
 })
 
