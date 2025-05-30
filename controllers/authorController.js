@@ -30,7 +30,7 @@ exports.getAuthorById = async(req,res)=>{
 }
 
 exports.updateAuthor = async(req,res)=>{
-    try{
+    try{    
         const updated = await Author.findByIdAndUpdate(req.params.id, req.body, {new: true})
         if(!updated)return res.status(404).json({error: 'Author not found'})
             res.json(updated);

@@ -1,22 +1,34 @@
 const Loans = require('../models/Loans')
 exports.getAllLoan = async (req, res) => {
-    try {
-        const loans = await Loans.find().populate('book').populate('borrower')
-        res.json(loans)
-    } catch (err) {
-        res.status(500).json({ error: err.message })
-    }
-}
+  try {
+    const loans = await Loans.find()
+      .populate({
+        path: 'book',
+        select: 'title'           
+      })
+      .populate({
+        path: 'borrower',
+        select: 'first_name last_name'  
+      });
 
-exports.getLoanById = async(req,res)=>{
-    try{
-        const loan = await Loans.findById(req.params.id).populate('book').populate('borrower')
-        if(!loan)return res.status(404).json({error: 'Loan not found'})
-            res.json(loan)
-    }catch(err){
-        res.status(500).json({error:err.message })
-    }
-}
+    res.json(loans);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+exports.getLoanById = async (req, res) => {
+  try {
+    const loan = await Loans.findById(req.params.id)
+      .populate({ path: 'book', select: 'title' })
+      .populate({ path: 'borrower', select: 'first_name last_name' });
+
+    if (!loan) return res.status(404).json({ error: 'Loan not found' });
+    res.json(loan);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
 
 exports.createLoan = async(req,res)=>{
     try{
@@ -40,7 +52,7 @@ exports.updateLoan = async(req, res)=>{
 
 exports.deleteLoan = async(req,res)=>{
     try{
-        const removed = await Loan.findByIdAndDelete(req.params.id)
+        const removed = await Loans.findByIdAndDelete(req.params.id)
         if(!removed) return res.status(404).json({error: 'Loan not found'})
             res.json({message: 'Loan deleted'})
     }catch(err){
