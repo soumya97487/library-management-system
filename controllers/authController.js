@@ -11,7 +11,7 @@ const sendToken = (user, statusCode, res)=>{
 exports.signup = async(req,res)=>{
     const{name, email, password, role} = req.body
     const user = await user.create({name, email, password, role})
-    sendToken(user, 201, res)
+    sendToken(user, 200, res)
 }
 
 exports.login = async(req, res)=>{
