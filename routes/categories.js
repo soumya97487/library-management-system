@@ -1,11 +1,24 @@
-const express = require('express')
-const router = express.Router()
-const controller = require('../controllers/categoryController')
+// routes/categories.js
+const express = require('express');
+const {
+  getAllCategories,
+  getCategoryById,
+  createCategory,
+  updateCategory,
+  deleteCategory
+} = require('../controllers/categoryController');
+const { protect, restrictTo } = require('../Middlewares/auth');
 
-router.post('/', controller.createCategory)
-router.get('/',controller.getAllCategories)
-router.get('/:id',controller.getCategoryById)
-router.put('/:id', controller.updateCategory)
-router.delete('/:id', controller.deleteCategory)
+const router = express.Router();
 
-module.exports = router
+router.get('/', protect, getAllCategories);
+
+router.get('/:id', protect, getCategoryById);
+
+router.post('/', protect, restrictTo('admin', 'librarian'), createCategory);
+
+router.put('/:id', protect, restrictTo('admin', 'librarian'), updateCategory);
+
+router.delete('/:id', protect, restrictTo('admin', 'librarian'), deleteCategory);
+
+module.exports = router;

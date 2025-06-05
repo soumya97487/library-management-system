@@ -1,15 +1,13 @@
 require('dotenv').config();
-
 const express = require('express');
 const connectDB = require('./config/db');
 
 const app = express();
 app.use(express.json());
 
-// Connect to MongoDB
 connectDB();
 
-// Route registration
+app.use('/api/auth', require('./routes/auth'));
 app.use('/api/authors', require('./routes/authors'));
 app.use('/api/books', require('./routes/books'));
 app.use('/api/categories', require('./routes/categories'));

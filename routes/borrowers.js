@@ -1,28 +1,20 @@
-const express = require('express')
-const router = express.Router()
-const controller = require('../controllers/borrowerController')
 
-router.get('/', controller.getAllBorrowers)
-router.get('/:id', controller.getBorrowersById)
-router.post('/', controller.createBorrower)
-router.put('/:id', controller.updateBorrower)
-router.delete('/:id', controller.deleteBorrower)
+const express = require('express');
+const {
+  getAllBorrowers,
+  getBorrowersById,      
+  createBorrower,
+  updateBorrower,
+  deleteBorrower
+} = require('../controllers/borrowerController');
+const { protect, restrictTo } = require('../Middlewares/auth');
 
-module.exports = router
+const router = express.Router();
 
+router.get('/', protect, getAllBorrowers);
+router.get('/:id', protect, getBorrowersById);
+router.post('/', protect, restrictTo('admin', 'librarian'), createBorrower);
+router.put('/:id', protect, restrictTo('admin', 'librarian'), updateBorrower);
+router.delete('/:id', protect, restrictTo('admin', 'librarian'), deleteBorrower);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+module.exports = router;
