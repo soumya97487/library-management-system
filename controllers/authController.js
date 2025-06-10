@@ -1,47 +1,114 @@
-
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
+const transport = require('../config/email');
 
-// helper to sign JWTs
+// Helper to sign JWTs
 function generateToken(userId) {
   return jwt.sign({ id: userId }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRE || '1h'
   });
 }
 
+// Generate a signup verification token containing user details
+function generateSignupToken(payload) {
+  return jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '30m' });
+}
+
 exports.signup = async (req, res) => {
   try {
     const { name, email, password, role } = req.body;
+
     if (!name || !email || !password) {
-      return res
-        .status(400)
-        .json({ success: false, message: 'Name, email, and password are required.' });
+      return res.status(400).json({
+        success: false,
+        message: 'Name, email, and password are required.'
+      });
     }
 
     // Check if user already exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return res
-        .status(400)
-        .json({ success: false, message: 'User with that email already exists.' });
+      return res.status(400).json({
+        success: false,
+        message: 'User with that email already exists.'
+      });
     }
 
-    // Create + save user (your userSchema.pre('save') will hash the password automatically)
-    const newUser = await User.create({ name, email, password, role });
+    // Create a token with the user info
+    const signupToken = generateSignupToken({ name, email, password, role });
 
-    // Generate token
-    const token = generateToken(newUser._id);
+    const verifyURL = `${process.env.CLIENT_URL}/api/auth/verify/${signupToken}`;
 
-    return res.status(201).json({
+    try {
+      await transport.sendMail({
+        from: `"Library Management" <${process.env.SMTP_USER}>`,
+        to: email,
+        subject: 'Verify your email',
+        template: 'verifyEmails',
+        context: {
+          name,
+          verifyURL
+        }
+      });
+    } catch (emailErr) {
+      console.error('Email sending failed:', emailErr);
+      return res.status(500).json({
+        success: false,
+        message: 'Could not send verification email. Please try again.'
+      });
+    }
+
+    return res.status(200).json({
       success: true,
-      data: {
-        id: newUser._id,
-        name: newUser.name,
-        email: newUser.email,
-        role: newUser.role
-      },
-      token
+      message: 'Verification email sent. Please check your inbox.'
     });
+
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ success: false, message: 'Server error' });
+  }
+};
+
+exports.verifyEmail = async (req, res) => {
+  try {
+    const { token } = req.params;
+
+    let decoded;
+    try {
+      decoded = jwt.verify(token, process.env.JWT_SECRET);
+    } catch (err) {
+      return res.status(400).json({
+        success: false,
+        message: 'Verification link expired or invalid.'
+      });
+    }
+
+    const { name, email, password, role } = decoded;
+
+    // Double-check user doesn't already exist
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({
+        success: false,
+        message: 'User already verified and registered.'
+      });
+    }
+
+    // Create user with isVerified true
+    const user = await User.create({
+      name,
+      email,
+      password,
+      role,
+      isVerified: true
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: 'Email verified! Signup successful.'
+    });
+
   } catch (err) {
     console.error(err);
     return res.status(500).json({ success: false, message: 'Server error' });
@@ -51,27 +118,32 @@ exports.signup = async (req, res) => {
 exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
+
     if (!email || !password) {
-      return res
-        .status(400)
-        .json({ success: false, message: 'Please provide email and password.' });
+      return res.status(400).json({
+        success: false,
+        message: 'Please provide email and password.'
+      });
     }
 
-    // Find user and include password (your schema has select:false on password)
     const user = await User.findOne({ email }).select('+password');
+
     if (!user) {
       return res.status(401).json({ success: false, message: 'Invalid credentials.' });
     }
 
-    // Check password match
+    if (!user.isVerified) {
+      return res.status(403).json({ success: false, message: 'Email not verified.' });
+    }
+
     const isMatch = await user.matchPassword(password);
     if (!isMatch) {
       return res.status(401).json({ success: false, message: 'Invalid credentials.' });
     }
 
-    // Generate token
     const token = generateToken(user._id);
     return res.status(200).json({ success: true, token });
+
   } catch (err) {
     console.error(err);
     return res.status(500).json({ success: false, message: 'Server error' });
