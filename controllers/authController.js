@@ -1,6 +1,5 @@
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
-const crypto = require('crypto');
 const transport = require('../config/email');
 
 // Helper to sign JWTs
@@ -78,6 +77,7 @@ exports.verifyEmail = async (req, res) => {
     try {
       decoded = jwt.verify(token, process.env.JWT_SECRET);
     } catch (err) {
+      console.log(err)
       return res.status(400).json({
         success: false,
         message: 'Verification link expired or invalid.'
@@ -103,7 +103,7 @@ exports.verifyEmail = async (req, res) => {
       role,
       isVerified: true
     });
-
+     console.log('Newly verified & created user:', user)
     return res.status(200).json({
       success: true,
       message: 'Email verified! Signup successful.'

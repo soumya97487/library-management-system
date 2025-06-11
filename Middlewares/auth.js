@@ -16,6 +16,7 @@ exports.protect = async(req,res, next)=>{
         req.user = await user.findById(decoded.id)
         next()
     }catch(err){
+        console.log(err)
         return res.status(401).json({ success: false, error: 'Not authorized, token invalid' })
     }
 }

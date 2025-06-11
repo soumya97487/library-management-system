@@ -25,8 +25,7 @@ A Node.js + Express REST API that powers a library’s core operations: cata
 * **DB:** MongoDB (Mongoose ODM)
 * **Auth:** JWT (+ refresh ready), bcrypt, email verification
 * **Mail:** nodemailer + nodemailer‑express‑handlebars
-* **Testing:** Jest / Supertest (optional)
-* **Dev tools:** ESLint, Prettier, Nodemon
+* **Dev tools:** ESLint, Nodemon
 
 ---
 
@@ -37,7 +36,7 @@ git clone https://github.com/<your‑org>/library‑management‑system.git
 cd library‑management‑system
 npm install
 cp .env.example .env    # then fill in your own values
-npm run dev             # nodemon src/server.js
+npm run dev             # nodemon index.js
 ```
 
 ### Required Environment Variables
