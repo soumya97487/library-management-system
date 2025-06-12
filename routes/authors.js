@@ -1,5 +1,6 @@
 // routes/authors.js
 const express = require('express');
+const {validate, schemas} = require('../middlewares/validate')
 const {
   createAuthor,
   getAllAuthors,
@@ -7,7 +8,7 @@ const {
   updateAuthor,
   deleteAuthor
 } = require('../controllers/authorController');
-const { protect, restrictTo } = require('../Middlewares/auth');
+const { protect, restrictTo } = require('../middlewares/auth');
 
 const router = express.Router();
 
@@ -16,8 +17,8 @@ router.get('/', protect, getAllAuthors);
 router.get('/:id', protect, getAuthorById);
 
 // Only “admin” or “librarian” can create, update, delete authors:
-router.post('/', protect, restrictTo('admin', 'librarian'), createAuthor);
-router.put('/:id', protect, restrictTo('admin', 'librarian'), updateAuthor);
+router.post('/', protect, restrictTo('admin', 'librarian'), validate(schemas.author), createAuthor);
+router.put('/:id', protect, restrictTo('admin', 'librarian'),validate(schemas.author), updateAuthor);
 router.delete('/:id', protect, restrictTo('admin', 'librarian'), deleteAuthor);
 
 module.exports = router;

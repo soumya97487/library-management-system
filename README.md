@@ -70,9 +70,9 @@ npm run dev             # nodemon index.js
 
 | Entity     | Base path         | Read (member)      | Write (librarian/admin)     |
 | ---------- | ----------------- | ------------------ | --------------------------- |
-| Authors    | `/api/authors`    | `GET /` `GET /:id` | `POST` `PATCH` `DELETE`     |
-| Books      | `/api/books`      | `GET /` `GET /:id` | `POST` `PATCH` `DELETE`     |
-| Categories | `/api/categories` | `GET /` `GET /:id` | `POST` `PATCH` `DELETE`     |
+| Authors    | `/api/authors`    | `GET /` `GET /:id` | `POST` `PUT` `DELETE`     |
+| Books      | `/api/books`      | `GET /` `GET /:id` | `POST` `PUT` `DELETE`     |
+| Categories | `/api/categories` | `GET /` `GET /:id` | `POST` `PUT` `DELETE`     |
 | Borrowers  | `/api/borrowers`  | –                  | full CRUD                   |
 | Loans      | `/api/loans`      | `GET /`            | `POST issue` `PATCH return` |
 
