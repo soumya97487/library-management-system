@@ -8,6 +8,8 @@ const validate = (schema)=>(req,res,next)=>{
     next()
 }
 
+const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
 const authorSchema = Joi.object({
   name: Joi.string().max(70).required(),
   bio: Joi.string().max(255).required()
@@ -21,8 +23,8 @@ const categorySchema = Joi.object({
 const borrowerSchema = Joi.object({
   first_name: Joi.string().max(70).required(),
   last_name: Joi.string().max(70).required(),
-  email: Joi.string().email().required(),
-  phone_number: Joi.string()
+  email: Joi.string().pattern(emailPattern).required().messages({'string.pattern.base':'Must be a valid email address'}),
+  phone_number: Joi.string().required()
 });
 
 const bookSchema = Joi.object({
@@ -45,7 +47,7 @@ const loanSchema = Joi.object({
 
 const userSignupSchema = Joi.object({
   name: Joi.string().min(3).max(50).required(),
-  email: Joi.string().email().required(),
+  email: Joi.string().pattern(emailPattern).required().messages({'string.pattern.base': 'Must be a valid email address'}),
   password: Joi.string().min(8).required(),
   role: Joi.string().valid('admin','librarian','member').optional()
 });
