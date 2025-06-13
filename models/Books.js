@@ -8,4 +8,4 @@ const BooksSchema = new mongoose.Schema({
      authors: [{type: mongoose.Schema.Types.ObjectId, ref: 'Author'}],
      categories:[{type: mongoose.Schema.Types.ObjectId, ref: 'Category'}]
 })
-module.exports = mongoose.model("books", BooksSchema)   
+module.exports = mongoose.model('Book', BooksSchema);

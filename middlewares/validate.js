@@ -21,7 +21,8 @@ const categorySchema = Joi.object({
 const borrowerSchema = Joi.object({
   first_name: Joi.string().max(70).required(),
   last_name: Joi.string().max(70).required(),
-  email: Joi.string().email().required()
+  email: Joi.string().email().required(),
+  phone_number: Joi.string()
 });
 
 const bookSchema = Joi.object({
@@ -36,8 +37,10 @@ const bookSchema = Joi.object({
 const loanSchema = Joi.object({
   book: Joi.string().hex().length(24).required(),
   borrower: Joi.string().hex().length(24).required(),
+  loan_date: Joi.date().required(),
   due_date: Joi.date().required(),
-  return_date: Joi.date().required()
+  return_date: Joi.date().required(),
+  status: Joi.string().required()
 });
 
 const userSignupSchema = Joi.object({

@@ -8,6 +8,6 @@ const authorSchema = new mongoose.Schema({
     created_at: {type: Date, default: Date.now}
 }) 
 
-const Author = mongoose.model('authors', authorSchema)
+const Author = mongoose.model('Author', authorSchema)
 
 module.exports = Author
