@@ -5,6 +5,8 @@ const globals = require("globals");
 
 module.exports = defineConfig([
   {
+    ignores: ["node_modules/", ".env"], // ⬅️ replaced .eslintignore
+
     files: ["**/*.{js,mjs,cjs}"],
     plugins: { js },
     extends: ["js/recommended"],

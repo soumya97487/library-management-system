@@ -14,5 +14,11 @@ app.use('/api/categories', require('./routes/categories'));
 app.use('/api/borrowers', require('./routes/borrowers'));
 app.use('/api/loans', require('./routes/loans'));
 
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+// Export app for testing
+module.exports = app;
+
+// Start server if run directly
+if (require.main === module) {
+  const PORT = process.env.PORT || 5000;
+  app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+}

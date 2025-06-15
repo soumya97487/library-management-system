@@ -111,8 +111,8 @@ src/
 | Command         | Purpose                       |
 | --------------- | ----------------------------- |
 | `npm run dev`   | Start dev server with nodemon |
-| `npm test`      | Run Jest test suite           |
-| `npm run lint`  | ESLint + Prettier check       |
+| `npm test`      | Run Mocha & Chai test suite   |
+| `npm run lint`  | ESLint                        |
 | `npm run build` | Compile (if using TS)         |
 
 ---
