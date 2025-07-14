@@ -1,0 +1,127 @@
+/* Root theme variables */
+:root {
+  --color-bg: #f7f9fc;
+  --color-primary: #2c7be5;
+  --color-accent: #e74c3c;
+  --color-text: #2f3e46;
+  --color-light: #ffffff;
+  --font-sans: 'Inter', sans-serif;
+}
+
+/* Reset & typography */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  line-height: 1.6;
+}
+
+/* Full-page background wrapper */
+.page-bg {
+  position: relative;
+  min-height: 100vh;
+  background: url('https://img.freepik.com/free-photo/book-library-with-open-textbook_1150-5916.jpg') center/cover no-repeat;
+}
+/* Dark overlay for readability */
+.page-bg::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  z-index: 0;
+  filter: blur(4px)
+}
+.page-bg > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Navbar */
+.navbar {
+  backdrop-filter: blur(8px);
+  background-color: rgba(255,255,255,0.8) !important;
+}
+.nav-link {
+  color: var(--color-text) !important;
+  font-weight: 500;
+}
+.nav-link.active {
+  border-bottom: 2px solid var(--color-primary);
+}
+
+/* Buttons */
+.btn {
+  border-radius: 6px;
+  font-weight: 500;
+  transition: transform .1s;
+}
+.btn:active {
+  transform: scale(0.97);
+}
+.btn-primary {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+.btn-primary:hover {
+  background-color: #1a5fb4;
+  border-color: #1a5fb4;
+}
+.btn-outline-danger {
+  color: var(--color-accent);
+  border-color: var(--color-accent);
+}
+.btn-outline-danger:hover {
+  background-color: var(--color-accent);
+  color: var(--color-light);
+}
+
+/* Cards */
+.card {
+  border: none;
+  border-radius: 8px;
+}
+
+/* Tables */
+.table {
+  border-collapse: separate;
+  border-spacing: 0;
+  background-color: var(--color-light);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.table thead th {
+  background-color: var(--color-bg);
+  border-bottom: 2px solid var(--color-primary);
+  color: var(--color-text);
+}
+.table tbody tr {
+  border-bottom: 1px solid #e9ecef;
+  transition: background-color .2s;
+}
+.table tbody tr:last-child {
+  border-bottom: none;
+}
+.table tbody tr:hover {
+  background-color: rgba(44,123,229,0.05);
+}
+
+/* Modals */
+.modal-content {
+  border-radius: 8px;
+}
+.modal-header, .modal-footer {
+  border: none;
+}
+
+/* Utility */
+.text-primary {
+  color: var(--color-primary) !important;
+}
+.bg-opacity-75 {
+  background-color: rgba(255,255,255,0.75) !important;
+}
