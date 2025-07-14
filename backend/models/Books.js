@@ -6,6 +6,10 @@ const BooksSchema = new mongoose.Schema({
     publisher: {type: String, required: true, maxlength: 70},
      created_at: {type: Date, default: Date.now},
      authors: [{type: mongoose.Schema.Types.ObjectId, ref: 'Author'}],
-     categories:[{type: mongoose.Schema.Types.ObjectId, ref: 'Category'}]
+     categories:[{type: mongoose.Schema.Types.ObjectId, ref: 'Category'}],
+     pdf: {
+     fileId: { type: mongoose.Schema.Types.ObjectId, ref: 'pdfs.files' },
+    filename: String
+  }
 })
 module.exports = mongoose.model('Book', BooksSchema);

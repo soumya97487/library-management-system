@@ -1,8 +1,16 @@
+// backend/index.js
 require('dotenv').config();
 const express = require('express');
+const cors = require('cors');
 const connectDB = require('./config/db');
 
 const app = express();
+
+app.use(cors({
+  origin: 'http://localhost:3000',  
+  credentials: true,
+}));
+
 app.use(express.json());
 
 connectDB();
@@ -12,13 +20,12 @@ app.use('/api/authors', require('./routes/authors'));
 app.use('/api/books', require('./routes/books'));
 app.use('/api/categories', require('./routes/categories'));
 app.use('/api/borrowers', require('./routes/borrowers'));
-app.use('/api/loans', require('./routes/loans'));
+app.use('/api/rentals', require('./routes/rentals'));
 
-// Export app for testing
-module.exports = app;
 
-// Start server if run directly
 if (require.main === module) {
   const PORT = process.env.PORT || 5000;
-  app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+  app.listen(PORT, () => console.log(`API server running on http://localhost:${PORT}`));
 }
+
+module.exports = app;
