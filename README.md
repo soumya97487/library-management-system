@@ -198,33 +198,3 @@
 4. Push to the branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
-## 📄 **License**
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 👥 **Author**
-
-- **Your Name** - *Initial work* - [YourGitHub](https://github.com/yourusername)
-
-## 🙏 **Acknowledgments**
-
-- Thanks to all contributors who helped build this project
-- Special thanks to the open-source community
-- Inspiration from modern library management systems
-
----
-
-### 📞 **Support**
-
-For support, email support@rentabook.com or join our Slack channel.
-
-### 🔗 **Links**
-
-- [Live Demo](https://your-demo-link.com)
-- [Documentation](https://your-docs-link.com)
-- [Report Bug](https://github.com/yourusername/rent-a-book-app/issues)
-- [Request Feature](https://github.com/yourusername/rent-a-book-app/issues)
-
----
-
-**⭐ Star this repository if you found it helpful!**
