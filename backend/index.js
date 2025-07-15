@@ -21,6 +21,7 @@ app.use('/api/books', require('./routes/books'));
 app.use('/api/categories', require('./routes/categories'));
 app.use('/api/borrowers', require('./routes/borrowers'));
 app.use('/api/rentals', require('./routes/rentals'));
+app.use('/api/payment', require('./routes/payment'))
 
 
 if (require.main === module) {

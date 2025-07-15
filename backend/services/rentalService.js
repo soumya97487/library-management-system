@@ -1,35 +1,36 @@
+// backend/services/rentalService.js
 const Rental = require('../models/Rental');
-const Book = require('../models/Books');
-const MONTHLY_RATE = 50;
+const Book   = require('../models/Books');
+const RATE   = 50;
 
 exports.createRental = async ({ bookId, userId, months }) => {
-  if (months < 1 || months > 12) throw new Error('Rent months must be between 1 and 12');
-  const book = await Book.findById(bookId);
-  if (!book) throw new Error('Book not found');
-  const amount = months * MONTHLY_RATE;
-  const rental = new Rental({ book: bookId, user: userId, rent_months: months, rent_amount: amount, status: 'pending' });
-  return await rental.save();
+  if (months<1||months>12) throw new Error('Months 1–12');
+  if (!await Book.findById(bookId)) throw new Error('Book not found');
+  const rent_amount = months * RATE;
+  return new Rental({ book: bookId, user: userId, rent_months: months, rent_amount, status: 'pending' }).save();
 };
 
 exports.listRentals = async ({ userId, role }) => {
-  if (role === 'admin' || role === 'librarian') {
-    return Rental.find().populate('book', 'title').populate('user', 'name');
-  }
-  return Rental.find({ user: userId }).populate('book', 'title');
+  const filter = role==='member'
+    ? { user: userId, status: { $ne:'cancelled' } }
+    : { status: { $ne:'cancelled' } };
+  return Rental.find(filter).populate('book','title').populate('user','name');
 };
 
 exports.updateRental = async ({ rentalId, months }) => {
-  if (months < 1 || months > 12) throw new Error('Rent months must be between 1 and 12');
-  const rental = await Rental.findById(rentalId);
-  if (!rental) throw new Error('Rental not found');
-  rental.rent_months = months;
-  rental.rent_amount = months * MONTHLY_RATE;
-  return await rental.save();
+  const r = await Rental.findById(rentalId);
+  if (!r) throw new Error('Rental not found');
+  r.rent_months = months; r.rent_amount = months * RATE;
+  return r.save();
 };
 
 exports.cancelRental = async ({ rentalId }) => {
-  const rental = await Rental.findById(rentalId);
-  if (!rental) throw new Error('Rental not found');
   await Rental.findByIdAndDelete(rentalId);
-  return
+};
+
+exports.payAllRentals = async ({ userId }) => {
+  return Rental.updateMany(
+    { user: userId, status: 'pending' },
+    { status:'paid' }
+  );
 };

@@ -1,46 +1,46 @@
 // backend/routes/books.js
-const express = require('express');
-const mongoose = require('mongoose');
-const multer = require('multer');
+
+const express    = require('express');
+const mongoose   = require('mongoose');
+const multer     = require('multer');
 const { GridFSBucket } = require('mongodb');
 const { protect, restrictTo } = require('../middlewares/auth');
-const { validate, schemas } = require('../middlewares/validate');
-const {
-  getAllBooks,
-  getBookById,
-  createBook,
-  updateBook,
-  deleteBook
-} = require('../controllers/bookController');
-const Book = require('../models/Books');
+const { validate, schemas }   = require('../middlewares/validate');
+const bookCtrl   = require('../controllers/bookController');
+const Rental     = require('../models/Rental');
+const Book       = require('../models/Books');
 
 const router = express.Router();
+const upload = multer({ storage: multer.memoryStorage() });
 
-// ------------------------------
-// Regular CRUD routes
-// ------------------------------
-router.get('/', protect, getAllBooks);
-router.get('/:id', protect, getBookById);
+// ---------- CRUD routes ----------
+router.get('/',    protect, bookCtrl.getAllBooks);
+router.get('/:id', protect, bookCtrl.getBookById);
+
 router.post(
   '/',
-  protect, restrictTo('admin', 'librarian'),
+  protect,
+  restrictTo('admin', 'librarian'),
   validate(schemas.book),
-  createBook
+  bookCtrl.createBook
 );
+
 router.put(
   '/:id',
-  protect, restrictTo('admin', 'librarian'),
+  protect,
+  restrictTo('admin', 'librarian'),
   validate(schemas.book),
-  updateBook
+  bookCtrl.updateBook
 );
-router.delete('/:id', protect, restrictTo('admin', 'librarian'), deleteBook);
 
-// ------------------------------
-// PDF upload (GridFS)
-// ------------------------------
-const storage = multer.memoryStorage();
-const upload = multer({ storage });
+router.delete(
+  '/:id',
+  protect,
+  restrictTo('admin', 'librarian'),
+  bookCtrl.deleteBook
+);
 
+// ---------- PDF Upload (admins/librarians) ----------
 router.post(
   '/:id/pdf',
   protect,
@@ -52,41 +52,55 @@ router.post(
       if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
 
       const bucket = new GridFSBucket(mongoose.connection.db, { bucketName: 'pdfs' });
-      const uploadStream = bucket.openUploadStream(
-        req.file.originalname,
-        {
-          contentType: req.file.mimetype,
-          metadata: { book: bookId }
-        }
-      );
-      uploadStream.end(req.file.buffer);
-
-      uploadStream.on('finish', async () => {
-        const fileId = uploadStream.id;
-        await Book.findByIdAndUpdate(bookId, {
-          pdf: { fileId, filename: uploadStream.filename }
-        });
-        res.json({ success: true, fileId });
+      const stream = bucket.openUploadStream(req.file.originalname, {
+        contentType: req.file.mimetype,
+        metadata: { book: bookId }
       });
-      uploadStream.on('error', err => res.status(500).json({ error: err.message }));
+
+      stream.end(req.file.buffer);
+
+      stream.on('finish', async () => {
+        await Book.findByIdAndUpdate(bookId, {
+          pdf: { fileId: stream.id, filename: stream.filename }
+        });
+        res.json({ success: true, fileId: stream.id });
+      });
+
+      stream.on('error', err => res.status(500).json({ error: err.message }));
     } catch (err) {
       res.status(500).json({ error: err.message });
     }
   }
 );
 
-// ------------------------------
-// PDF download (GridFS)
-// ------------------------------
+// ---------- PDF Download (admins/librarians & paid members) ----------
 router.get(
   '/:id/pdf/download',
   protect,
-  restrictTo('admin', 'librarian'),
   async (req, res) => {
     try {
-      const book = await Book.findById(req.params.id);
-      if (!book.pdf?.fileId) return res.status(404).send('No PDF available');
+      const bookId = req.params.id;
+      const user  = req.user; // { _id, role, ... }
 
+      // Fetch the Book to get its fileId
+      const book = await Book.findById(bookId);
+      if (!book?.pdf?.fileId) {
+        return res.status(404).send('No PDF available');
+      }
+
+      // If member, verify they have a PAID rental for this book
+      if (user.role === 'member') {
+        const paidRental = await Rental.findOne({
+          book:   bookId,
+          user:   user._id,
+          status: 'paid'
+        });
+        if (!paidRental) {
+          return res.status(403).send('You have not paid for this book');
+        }
+      }
+
+      // Stream the PDF from GridFS
       const bucket = new GridFSBucket(mongoose.connection.db, { bucketName: 'pdfs' });
       const downloadStream = bucket.openDownloadStream(book.pdf.fileId);
 
@@ -95,6 +109,7 @@ router.get(
 
       downloadStream.on('error', () => res.sendStatus(404));
     } catch (err) {
+      console.error('PDF download error:', err);
       res.status(500).json({ error: err.message });
     }
   }
